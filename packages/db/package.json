@@ -1,0 +1,20 @@
+{
+  "name": "@aura/db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "5.19.1"
+  },
+  "devDependencies": {
+    "prisma": "5.19.1",
+    "typescript": "5.6.2"
+  }
+}

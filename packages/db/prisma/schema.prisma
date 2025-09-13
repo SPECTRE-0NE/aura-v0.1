@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String?
+  workspaces WorkspaceMember[]
+  createdAt  DateTime @default(now())
+}
+
+model Workspace {
+  id          String           @id @default(cuid())
+  name        String
+  members     WorkspaceMember[]
+  workflows   Workflow[]
+  widgets     KPIWidget[]
+  createdAt   DateTime         @default(now())
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  role        String    // owner, admin, member
+}
+
+model Workflow {
+  id           String     @id @default(cuid())
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+  name         String
+  description  String?
+  tasks        Task[]
+  cadence      String?    // e.g. weekly, monthly
+  createdAt    DateTime   @default(now())
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  workflow    Workflow  @relation(fields: [workflowId], references: [id])
+  workflowId  String
+  title       String
+  assignee    String?
+  dueAt       DateTime?
+  status      String     @default("todo") // todo, doing, done
+  createdAt   DateTime   @default(now())
+}
+
+model IntegrationConfig {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  provider    String    // slack, clickup, notion, sheets
+  configJson  Json
+  createdAt   DateTime  @default(now())
+}
+
+model KPIWidget {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  title       String
+  query       String    // how to fetch/compute it
+  unit        String?
+  createdAt   DateTime  @default(now())
+}
